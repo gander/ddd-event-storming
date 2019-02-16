@@ -18,7 +18,7 @@ class StandardPoints implements Points
      */
     public function __construct(int $amount)
     {
-        Assert::greaterThan($amount, 0);
+        Assert::greaterThanEq($amount, 0);
 
         $this->amount = $amount;
     }

@@ -22,7 +22,7 @@ class ExpirablePoints implements Points
      */
     public function __construct(int $amount, \DateTimeImmutable $expiration)
     {
-        Assert::greaterThan($amount, 0);
+        Assert::greaterThanEq($amount, 0);
 
         $this->amount = $amount;
         $this->expirationDate = $expiration;
