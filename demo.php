@@ -10,3 +10,4 @@ $service = new \App\Loyalty\LoyaltyService($wallets);
 $service->create($emailStr);
 $service->addPoints($emailStr, 100);
 $service->withdrawPoints($emailStr, 50);
+$service->block($emailStr, 'Nobody knows');

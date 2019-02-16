@@ -58,4 +58,30 @@ class LoyaltyService
 
         $this->wallets->save($wallet);
     }
+
+    /**
+     * @param string $email
+     * @param string $reason
+     */
+    public function block(string $email, string $reason)
+    {
+        $wallet = $this->wallets->get(new Email($email));
+
+        $wallet->block($reason);
+
+        $this->wallets->save($wallet);
+    }
+
+    /**
+     * @param string $email
+     * @param string $reason
+     */
+    public function unblock(string $email, string $reason)
+    {
+        $wallet = $this->wallets->get(new Email($email));
+
+        $wallet->unblock($reason);
+
+        $this->wallets->save($wallet);
+    }
 }
