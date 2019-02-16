@@ -4,7 +4,7 @@ namespace App\Loyalty;
 
 use App\Loyalty\Sorter\RandomAmountSorter;
 
-class WalletService
+class LoyaltyService
 {
     /**
      * @var Wallets

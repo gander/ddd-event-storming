@@ -5,7 +5,7 @@ $emailStr = 'some@one';
 
 $adapter = new \Gaufrette\Adapter\SafeLocal('var/wallets');
 $wallets = (new \App\Loyalty\Repository\GaufretteWallets(new \Gaufrette\Filesystem($adapter)));
-$service = new \App\Loyalty\WalletService($wallets);
+$service = new \App\Loyalty\LoyaltyService($wallets);
 
 $service->create($emailStr);
 $service->addPoints($emailStr, 100);
