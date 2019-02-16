@@ -1,29 +1,12 @@
 <?php
-
-use App\Loyalty\WalletStatus;
-
 require_once __DIR__ . '/vendor/autoload.php';
 
+$emailStr = 'some@one';
 
-$wallet = new \App\Loyalty\Wallet(new \App\Loyalty\Email('some@one'), new \App\Loyalty\Sorter\DescendingAmountSorter());
+$adapter = new \Gaufrette\Adapter\SafeLocal('var/wallets');
+$wallets = (new \App\Loyalty\Repository\GaufretteWallets(new \Gaufrette\Filesystem($adapter)));
+$service = new \App\Loyalty\WalletService($wallets);
 
-$wallet->addPoints(new \App\Loyalty\StandardPoints(10));
-$wallet->addPoints(new \App\Loyalty\StandardPoints(8));
-$wallet->addPoints(new \App\Loyalty\StandardPoints(5));
-$wallet->addPoints(new \App\Loyalty\StandardPoints(2));
-$wallet->addPoints(new \App\Loyalty\ExpirablePoints(1, new \DateTimeImmutable()));
-$wallet->addPoints(new \App\Loyalty\StandardPoints(20));
-$wallet->addPoints(new \App\Loyalty\ExpirablePoints(1, (new \DateTimeImmutable())->modify('+1 hour')));
-
-
-$wallet->withdrawPoints(new \App\Loyalty\StandardPoints(1));
-
-
-$adapter = new \Gaufrette\Adapter\Zip('var/wallets/wallet.zip');
-
-
-
-(new \App\Loyalty\Repository\GaufretteWallets(new \Gaufrette\Filesystem($adapter)))->save($wallet);
-
-
-
+$service->create($emailStr);
+$service->addPoints($emailStr, 100);
+$service->withdrawPoints($emailStr, 50);
