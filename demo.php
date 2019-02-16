@@ -19,4 +19,11 @@ $wallet->addPoints(new \App\Loyalty\ExpirablePoints(1, (new \DateTimeImmutable()
 $wallet->withdrawPoints(new \App\Loyalty\StandardPoints(1));
 
 
-var_dump($wallet);
+$adapter = new \Gaufrette\Adapter\Zip('var/wallets/wallet.zip');
+
+
+
+(new \App\Loyalty\Repository\GaufretteWallets(new \Gaufrette\Filesystem($adapter)))->save($wallet);
+
+
+

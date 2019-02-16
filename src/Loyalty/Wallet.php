@@ -28,10 +28,18 @@ class Wallet
         $this->points = new PointsCollection([], $sorter);
     }
 
+    /**
+     * @return Email
+     */
+    public function getEmail(): Email
+    {
+        return $this->email;
+    }
+
     public function addPoints(Points $points): void
     {
         if (!$this->isUnBlocked()) {
-            throw new Exceptions\BlockedWalletException();
+            throw new Exception\BlockedWalletException();
         }
 
         $this->points->addPoints($points);
@@ -39,6 +47,10 @@ class Wallet
 
     public function withdrawPoints(Points $points): void
     {
+        if (!$this->isUnBlocked()) {
+            throw new Exception\BlockedWalletException();
+        }
+
         if (!$this->canWithdrawPoints($points)) {
             throw new InsufficientBalanceException();
         }

@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Loyalty\Exceptions;
+namespace App\Loyalty\Exception;
 
 
 class BlockedWalletException extends \Exception
