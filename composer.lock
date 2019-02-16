@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f42063e6f57e985bf57297b79faac2a5",
+    "content-hash": "bf295bf57db88e953eb9a294258b3c8a",
     "packages": [
         {
             "name": "moneyphp/money",
