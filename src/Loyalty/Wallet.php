@@ -2,6 +2,9 @@
 
 namespace App\Loyalty;
 
+use App\Loyalty\Event\PointsAdded;
+use App\Loyalty\Event\PointsUsed;
+use App\Loyalty\Event\WalletCreated;
 use App\Loyalty\Exception\InsufficientBalanceException;
 
 class Wallet
@@ -27,6 +30,11 @@ class Wallet
     private $sorter;
 
     /**
+     * @var Event[]
+     */
+    private $events = [];
+
+    /**
      * Wallet constructor.
      * @param Email $email
      * @param Sorter $sorter
@@ -36,6 +44,13 @@ class Wallet
         $this->email = $email;
         $this->status = Status::UNBLOCKED();
         $this->sorter = $sorter;
+
+        $this->addEvent(new WalletCreated($email));
+    }
+
+    private function addEvent(Event $event)
+    {
+        $this->events[] = $event;
     }
 
     public function addPoints(Points $points): void
@@ -46,6 +61,8 @@ class Wallet
 
         $this->points[] = $points;
         $this->points = $this->sorter->sort($this->points);
+
+        $this->addEvent(new PointsAdded($this->email, $points));
     }
 
     public function withdrawPoints(Points $points): void
@@ -57,6 +74,8 @@ class Wallet
 
         // ..
         $this->points = [new StandardPoints($this->getBalance()->getAmount() - $points->getAmount())];
+
+        $this->addEvent(new PointsUsed($this->email, $points));
     }
 
     public function block(string $reason): void
@@ -95,7 +114,7 @@ class Wallet
     {
         return $this->email;
     }
-    
+
     /**
      * @param Points $points
      * @return bool
@@ -111,5 +130,15 @@ class Wallet
     private function canAddPoints(): bool
     {
         return $this->status != Status::BLOCKED();
+    }
+
+    public function extractEvents(): array {
+
+    }
+
+    public static function fromEvens(array $events): Wallet {
+        foreach ($events as $event) {
+
+        }
     }
 }

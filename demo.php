@@ -34,7 +34,7 @@ $service = new LoyaltyService($wallets, new SorterFactory());
 $service->createWallet($email);
 $service->addPointsForOrder(new OrderDTO(Money::PLN(201), new Email($email)));
 
-var_dump($wallets->get(new Email($email))->getBalance());
+dump($wallets->get(new Email($email)));
 
 //$promoActivator = new AndX([
 //    new \App\Loyalty\PromoActivator\OrderPriceGreaterThan(Money::PLN(5000)),
