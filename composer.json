@@ -9,6 +9,7 @@
     "myclabs/php-enum": "^1.6",
     "ramsey/uuid": "^3.8",
     "webmozart/assert": "^1.4",
-    "knplabs/gaufrette": "^0.8.1"
+    "knplabs/gaufrette": "^0.8.1",
+    "phpunit/phpunit": "^8.0"
   }
 }
