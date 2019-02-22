@@ -3,7 +3,9 @@
 namespace App\Loyalty;
 
 use App\Loyalty\PointsCalculation\Fixed;
+use App\Loyalty\PointsCalculation\Multiply;
 use App\Loyalty\PointsCalculation\Ratio;
+use App\Loyalty\PromoActivator\EmailDomain;
 use App\Loyalty\PromoActivator\OrderPriceGreaterThan;
 use App\Loyalty\Sorter\DescendingAmountSorter;
 use App\Loyalty\Sorter\Random;
@@ -60,6 +62,7 @@ class LoyaltyService
     {
         // Do fabryki z tym?
         $promotions = [
+            new PointsPromo(new Multiply(2), new EmailDomain('moleo.pl')),
             new PointsPromo(new Fixed(new StandardPoints(10)), new OrderPriceGreaterThan(Money::PLN(100))),
             new PointsPromo(new Ratio(0.5), new OrderPriceGreaterThan(Money::PLN(200))),
         ];
