@@ -2,7 +2,12 @@
 
 namespace App\Loyalty;
 
-use App\Loyalty\Sorter\RandomAmountSorter;
+use App\Loyalty\PointsCalculation\Fixed;
+use App\Loyalty\PointsCalculation\Ratio;
+use App\Loyalty\PromoActivator\OrderPriceGreaterThan;
+use App\Loyalty\Sorter\DescendingAmountSorter;
+use App\Loyalty\Sorter\Random;
+use Money\Money;
 
 class LoyaltyService
 {
@@ -12,57 +17,74 @@ class LoyaltyService
     private $wallets;
 
     /**
-     * @param Wallets $wallets
+     * @var SorterFactory
      */
-    public function __construct(Wallets $wallets)
+    private $sorterFactory;
+
+    /**
+     * LoyaltyService constructor.
+     * @param Wallets $wallets
+     * @param SorterFactory $sorterFactory
+     */
+    public function __construct(Wallets $wallets, SorterFactory $sorterFactory)
     {
         $this->wallets = $wallets;
+        $this->sorterFactory = $sorterFactory;
     }
 
-    /**
-     * @param string $email
-     */
-    public function create(string $email)
+    // createWallet
+
+    public function createWallet(string $email)
     {
-        $email = new Email($email);
-        $wallet = new Wallet($email, new RandomAmountSorter());
+        // @todo Obsluga bledow!
+        $wallet = new Wallet(new Email($email), new Random());
 
         $this->wallets->save($wallet);
     }
 
-    /**
-     * @param string $email
-     * @param int $amount
-     * @throws Exception\BlockedWalletException
-     */
-    public function addPoints(string $email, int $amount)
+    public function addPoints(string $email, int $points)
     {
         $wallet = $this->wallets->get(new Email($email));
 
-        $wallet->addPoints(new StandardPoints($amount));
+        $wallet->addPoints(new StandardPoints($points));
 
         $this->wallets->save($wallet);
     }
 
     /**
-     * @param string $email
-     * @param int $amount
-     * @throws Exception\InsufficientBalanceException
-     * @throws Exception\BlockedWalletException
+     * UPROSZCZENIE!
+     *
+     * @param OrderDTO $orderDTO
      */
-    public function withdrawPoints(string $email, int $amount)
+    public function addPointsForOrder(OrderDTO $orderDTO)
     {
-        $wallet = $this->wallets->get(new Email($email));
+        // Do fabryki z tym?
+        $promotions = [
+            new PointsPromo(new Fixed(new StandardPoints(10)), new OrderPriceGreaterThan(Money::PLN(100))),
+            new PointsPromo(new Ratio(0.5), new OrderPriceGreaterThan(Money::PLN(200))),
+        ];
+        $promotionsPoints = [];
 
-        $wallet->withdrawPoints(new StandardPoints($amount));
+        /**
+         * @var $promotion PointsPromo
+         */
+        foreach ($promotions as $promotion) {
+            $promotionsPoints[] = $promotion->calculatePoints($orderDTO);
+        }
 
-        $this->wallets->save($wallet);
+        $promotionsPoints = $this->sorterFactory->buildFor($orderDTO->getCustomerEmail())->sort($promotionsPoints);
+
+        if (count($promotionsPoints)) {
+            $pointsToAdd = $promotionsPoints[0];
+
+            if ($pointsToAdd->getAmount() > 0) {
+                $this->addPoints($orderDTO->getCustomerEmail()->getAddress(), $promotionsPoints[0]->getAmount());
+            }
+        }
     }
 
-    /**
-     * @param string $email
-     * @param string $reason
-     */
+    // usePoints
+
     public function block(string $email, string $reason)
     {
         $wallet = $this->wallets->get(new Email($email));
@@ -72,10 +94,6 @@ class LoyaltyService
         $this->wallets->save($wallet);
     }
 
-    /**
-     * @param string $email
-     * @param string $reason
-     */
     public function unblock(string $email, string $reason)
     {
         $wallet = $this->wallets->get(new Email($email));

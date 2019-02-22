@@ -14,6 +14,7 @@ class Fixed implements PointsCalculation
     private $points;
 
     /**
+     * Fixed constructor.
      * @param Points $points
      */
     public function __construct(Points $points)
@@ -25,5 +26,4 @@ class Fixed implements PointsCalculation
     {
         return $this->points;
     }
-
 }

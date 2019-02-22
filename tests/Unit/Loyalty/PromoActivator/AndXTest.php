@@ -10,20 +10,18 @@ use Prophecy\Argument;
 
 class AndXTest extends TestCase
 {
-
     /**
      * @param array $promoActivators
-     * @param bool $exceptedResult
+     * @param bool $expectedResult
      * @dataProvider getData
      */
-    public function test(array $promoActivators, bool $exceptedResult)
+    public function test(array $promoActivators, bool $expectedResult)
     {
         $promoActivator = new AndX($promoActivators);
-        $result = $promoActivator->isSatisfiedFor(
-            $this->prophesize(OrderDTO::class)->reveal()
-        );
 
-        $this->assertEquals($exceptedResult, $result);
+        $result = $promoActivator->isSatisfiedFor($this->prophesize(OrderDTO::class)->reveal());
+
+        $this->assertEquals($expectedResult, $result);
     }
 
     public function getData()
@@ -36,10 +34,13 @@ class AndXTest extends TestCase
         ];
     }
 
-    private function buildPromoActivator(bool $exceptedResult)
+    private function buildPromoActivator(bool $expectedResult)
     {
         $promoActivator = $this->prophesize(PromoActivator::class);
-        $promoActivator->isSatisfiedFor(Argument::type(OrderDTO::class))->willReturn($exceptedResult);
+
+        $promoActivator->isSatisfiedFor(Argument::type(OrderDTO::class))->willReturn($expectedResult);
+
         return $promoActivator->reveal();
     }
+
 }

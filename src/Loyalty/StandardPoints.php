@@ -1,19 +1,18 @@
 <?php
 
-
 namespace App\Loyalty;
-
 
 use Webmozart\Assert\Assert;
 
 class StandardPoints implements Points
 {
     /**
-     * @var integer
+     * @var int
      */
     private $amount;
 
     /**
+     * Points constructor.
      * @param int $amount
      */
     public function __construct(int $amount)
@@ -30,11 +29,4 @@ class StandardPoints implements Points
     {
         return $this->amount;
     }
-
-    public function subPoints(int $amount): Points
-    {
-        return new self($this->amount - $amount);
-    }
-
-
 }

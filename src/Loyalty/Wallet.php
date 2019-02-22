@@ -12,20 +12,80 @@ class Wallet
     private $email;
 
     /**
-     * @var WalletStatus
+     * @var Status
      */
     private $status;
 
     /**
-     * @var PointsCollection
+     * @var Points[]
      */
-    private $points;
+    private $points = [];
 
+    /**
+     * @var Sorter
+     */
+    private $sorter;
+
+    /**
+     * Wallet constructor.
+     * @param Email $email
+     * @param Sorter $sorter
+     */
     public function __construct(Email $email, Sorter $sorter)
     {
         $this->email = $email;
-        $this->status = WalletStatus::UNBLOCKED();
-        $this->points = new PointsCollection([], $sorter);
+        $this->status = Status::UNBLOCKED();
+        $this->sorter = $sorter;
+    }
+
+    public function addPoints(Points $points): void
+    {
+        if (!$this->canAddPoints()) {
+            throw new \Exception(); // @todo Nowy exception, ale konkretny
+        }
+
+        $this->points[] = $points;
+        $this->points = $this->sorter->sort($this->points);
+    }
+
+    public function withdrawPoints(Points $points): void
+    {
+        if (!$this->canWithdrawPoints($points)) {
+            throw new InsufficientBalanceException(/* .. */);
+            // throw new \Exception(); // TAK NIE!
+        }
+
+        // ..
+        $this->points = [new StandardPoints($this->getBalance()->getAmount() - $points->getAmount())];
+    }
+
+    public function block(string $reason): void
+    {
+        // @todo Dodac zabezpieczenie
+
+        $this->status = Status::BLOCKED();
+
+        // ..
+    }
+
+    public function unblock(string $reason): void
+    {
+        // @todo Dodac zabezpieczenie
+
+        $this->status = Status::UNBLOCKED();
+
+        // ..
+    }
+
+    public function getBalance(): Points
+    {
+        $sum = 0;
+
+        foreach ($this->points as $points) {
+            $sum += $points->getAmount();
+        }
+
+        return new StandardPoints($sum);
     }
 
     /**
@@ -35,67 +95,21 @@ class Wallet
     {
         return $this->email;
     }
-
-    public function addPoints(Points $points): void
-    {
-        if (!$this->isUnBlocked()) {
-            throw new Exception\BlockedWalletException();
-        }
-
-        $this->points->addPoints($points);
-    }
-
-    public function withdrawPoints(Points $points): void
-    {
-        if (!$this->isUnBlocked()) {
-            throw new Exception\BlockedWalletException();
-        }
-
-        if (!$this->canWithdrawPoints($points)) {
-            throw new InsufficientBalanceException();
-        }
-
-        $this->points->subPoints($points);
-    }
-
-    public function block(string $reason): void
-    {
-        $this->status = WalletStatus::BLOCKED();
-    }
-
-    public function unblock(string $reason): void
-    {
-        $this->status = WalletStatus::UNBLOCKED();
-    }
-
-    public function getStatus(): WalletStatus
-    {
-        return $this->status;
-    }
-
-    public function getBalance(): Points
-    {
-        $amount = 0;
-        foreach ($this->points as $point) {
-            $amount += $point->getAmount();
-        }
-        return new StandardPoints($amount);
-    }
-
+    
     /**
      * @param Points $points
      * @return bool
      */
     private function canWithdrawPoints(Points $points): bool
     {
-        return $this->isUnBlocked() && ($this->getBalance()->getAmount() >= $points->getAmount());
+        return $points->getAmount() <= $this->getBalance()->getAmount() && $this->status == Status::UNBLOCKED();
     }
 
     /**
      * @return bool
      */
-    public function isUnBlocked(): bool
+    private function canAddPoints(): bool
     {
-        return $this->status->equals(WalletStatus::UNBLOCKED());
+        return $this->status != Status::BLOCKED();
     }
 }

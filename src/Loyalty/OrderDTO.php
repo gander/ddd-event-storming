@@ -9,13 +9,15 @@ class OrderDTO
     /**
      * @var Money
      */
-    private  $price;
+    private $price;
+
     /**
      * @var Email
      */
     private $customerEmail;
 
     /**
+     * OrderDTO constructor.
      * @param Money $price
      * @param Email $customerEmail
      */

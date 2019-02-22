@@ -1,10 +1,8 @@
 <?php
 
-
 namespace App\Loyalty;
 
-
-class Email
+class Email implements IEmail
 {
     /**
      * @var string
@@ -12,11 +10,13 @@ class Email
     private $address;
 
     /**
+     * Email constructor.
      * @param string $address
      */
     public function __construct(string $address)
     {
-        // @todo walidacja
+        // @todo walidacja adresu
+
         $this->address = $address;
     }
 

@@ -4,27 +4,24 @@ namespace Tests\App\Loyalty\PromoActivator;
 
 use App\Loyalty\OrderDTO;
 use App\Loyalty\PromoActivator;
-use App\Loyalty\PromoActivator\AndX;
 use App\Loyalty\PromoActivator\OrX;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 
 class OrXTest extends TestCase
 {
-
     /**
      * @param array $promoActivators
-     * @param bool $exceptedResult
+     * @param bool $expectedResult
      * @dataProvider getData
      */
-    public function test(array $promoActivators, bool $exceptedResult)
+    public function test(array $promoActivators, bool $expectedResult)
     {
         $promoActivator = new OrX($promoActivators);
-        $result = $promoActivator->isSatisfiedFor(
-            $this->prophesize(OrderDTO::class)->reveal()
-        );
 
-        $this->assertEquals($exceptedResult, $result);
+        $result = $promoActivator->isSatisfiedFor($this->prophesize(OrderDTO::class)->reveal());
+
+        $this->assertEquals($expectedResult, $result);
     }
 
     public function getData()
@@ -37,10 +34,13 @@ class OrXTest extends TestCase
         ];
     }
 
-    private function buildPromoActivator(bool $exceptedResult)
+    private function buildPromoActivator(bool $expectedResult)
     {
         $promoActivator = $this->prophesize(PromoActivator::class);
-        $promoActivator->isSatisfiedFor(Argument::type(OrderDTO::class))->willReturn($exceptedResult);
+
+        $promoActivator->isSatisfiedFor(Argument::type(OrderDTO::class))->willReturn($expectedResult);
+
         return $promoActivator->reveal();
     }
+
 }

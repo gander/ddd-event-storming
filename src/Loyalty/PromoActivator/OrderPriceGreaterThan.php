@@ -14,6 +14,7 @@ class OrderPriceGreaterThan implements PromoActivator
     private $limit;
 
     /**
+     * OrderPriceGreaterThan constructor.
      * @param Money $limit
      */
     public function __construct(Money $limit)

@@ -13,6 +13,7 @@ class NotX implements PromoActivator
     private $promoActivator;
 
     /**
+     * AndX constructor.
      * @param PromoActivator $promoActivator
      */
     public function __construct(PromoActivator $promoActivator)

@@ -15,13 +15,13 @@ class Ratio implements PointsCalculation
     private $ratio;
 
     /**
+     * Ratio constructor.
      * @param float $ratio
      */
     public function __construct(float $ratio)
     {
         $this->ratio = $ratio;
     }
-
 
     public function calculate(OrderDTO $orderDTO): Points
     {

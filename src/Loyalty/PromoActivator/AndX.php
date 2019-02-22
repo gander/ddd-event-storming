@@ -13,6 +13,7 @@ class AndX implements PromoActivator
     private $promoActivators;
 
     /**
+     * AndX constructor.
      * @param PromoActivator[] $promoActivators
      */
     public function __construct(array $promoActivators)
@@ -22,10 +23,10 @@ class AndX implements PromoActivator
 
     public function isSatisfiedFor(OrderDTO $orderDTO): bool
     {
-        foreach ($this->promoActivators as $promoActivator) {
-            if (!$promoActivator->isSatisfiedFor($orderDTO)) {
+        foreach ($this->promoActivators as $activator) {
+            if (!$activator->isSatisfiedFor($orderDTO)) {
                 return false;
-            };
+            }
         }
 
         return true;

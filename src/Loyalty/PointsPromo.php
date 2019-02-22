@@ -15,6 +15,7 @@ class PointsPromo
     private $promoActivator;
 
     /**
+     * PointsPromo constructor.
      * @param PointsCalculation $pointsCalculation
      * @param PromoActivator $promoActivator
      */
