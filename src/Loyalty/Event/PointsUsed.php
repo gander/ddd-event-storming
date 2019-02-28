@@ -3,7 +3,6 @@
 namespace App\Loyalty\Event;
 
 use App\Loyalty\Email;
-use App\Loyalty\Event;
 use App\Loyalty\Points;
 
 class PointsUsed extends Event
@@ -19,6 +18,7 @@ class PointsUsed extends Event
     private $points;
 
     /**
+     * PointAdded constructor.
      * @param Email $email
      * @param Points $points
      */

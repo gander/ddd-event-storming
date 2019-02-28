@@ -111,6 +111,55 @@ class Combo implements Product
     }
 }
 
+interface Discount
+{
+    public function calculatePrice(float $price): float;
+}
+
+class Fixed implements Discount
+{
+    /**
+     * @var float
+     */
+    private $price;
+
+    /**
+     * Fixed constructor.
+     * @param float $price
+     */
+    public function __construct(float $price)
+    {
+        $this->price = $price;
+    }
+
+    public function calculatePrice(float $price): float
+    {
+        return max($price - $this->price, 0);
+    }
+}
+
+class Ratio implements Discount
+{
+    /**
+     * @var float
+     */
+    private $ratio;
+
+    /**
+     * Ratio constructor.
+     * @param float $ratio
+     */
+    public function __construct(float $ratio)
+    {
+        $this->ratio = $ratio;
+    }
+
+    public function calculatePrice(float $price): float
+    {
+        return $price * $this->ratio;
+    }
+}
+
 class Discounted implements Product
 {
     /**
@@ -118,20 +167,20 @@ class Discounted implements Product
      */
     private $product;
 
-    /**
-     * @var float
+     /**
+     * @var Discount
      */
-    private $ratio;
+    private $discount;
 
     /**
      * Discounted constructor.
      * @param Product $product
-     * @param float $ratio
+     * @param Discount $discount
      */
-    public function __construct(Product $product, float $ratio)
+    public function __construct(Product $product, Discount $discount)
     {
         $this->product = $product;
-        $this->ratio = $ratio;
+        $this->discount = $discount;
     }
 
     public function getName(): string
@@ -141,7 +190,22 @@ class Discounted implements Product
 
     public function getPrice(): int
     {
-        return $this->product->getPrice() * $this->ratio;
+        return $this->discount->calculatePrice($this->product->getPrice());
+    }
+}
+
+class DiscountFactory
+{
+    public function create(string $type, float $value)
+    {
+        switch ($type) {
+            case 'R':
+                return new Ratio($value);
+            case 'F':
+                return new Fixed($value);
+            default:
+                throw new InvalidArgumentException();
+        }
     }
 }
 
@@ -162,3 +226,4 @@ foreach ($cart as $product) {
     echo $product->getName() . ' ' . $product->getPrice() . PHP_EOL;
 }
 
+ProductsDiscount::getDiscountsForProduct($pId);

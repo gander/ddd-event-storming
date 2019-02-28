@@ -4,6 +4,8 @@ namespace App\Loyalty;
 
 use App\Loyalty\Event\Event;
 use App\Loyalty\Event\PointsAdded;
+use App\Loyalty\Event\PointsUsed;
+use App\Loyalty\Event\TransferInitiated;
 use App\Loyalty\Event\WalletCreated;
 use App\Loyalty\Exception\InsufficientBalanceException;
 
@@ -35,6 +37,15 @@ class Wallet
      * @var int
      */
     private $version = 0;
+
+    /**
+     * @var array
+     */
+    private $transfers = [];
+
+    private function __construct()
+    {
+    }
 
     public static function fromEvents(array $events): Wallet
     {
@@ -80,6 +91,13 @@ class Wallet
                 $this->points[] = $event->getPoints();
                 $this->points = $this->sorter->sort($this->points);
                 break;
+            case PointsUsed::class:
+                /* @var $event PointsUsed */
+                $this->points = [new StandardPoints($this->getBalance()->getAmount() - $event->getPoints()->getAmount())];;
+                break;
+            case TransferInitiated::class:
+                $this->transfers[] = new Transfer(); // @todo ...
+                break;
         }
     }
 
@@ -99,8 +117,7 @@ class Wallet
             // throw new \Exception(); // TAK NIE!
         }
 
-        // ..
-        $this->points = [new StandardPoints($this->getBalance()->getAmount() - $points->getAmount())];
+        $this->recordThat(new PointsUsed($this->email, $points));
     }
 
     public function block(string $reason): void
@@ -139,7 +156,6 @@ class Wallet
     {
         return $this->email;
     }
-
     public function extractEvents(): array
     {
         $events = $this->events;
@@ -164,5 +180,14 @@ class Wallet
     private function canAddPoints(): bool
     {
         return $this->status != Status::BLOCKED();
+    }
+
+    public function initiateTransfer(Email $email, int $points)
+    {
+        if (!$this->canWithdrawPoints(new StandardPoints($points))) {
+            throw new \InvalidArgumentException(); // @todo :)
+        }
+
+        $this->recordThat(new TransferInitiated($this->getEmail()->getAddress(), $email->getAddress(), $points));
     }
 }

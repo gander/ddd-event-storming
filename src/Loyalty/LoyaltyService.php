@@ -2,7 +2,10 @@
 
 namespace App\Loyalty;
 
+use App\Loyalty\Command\AddPoints;
 use App\Loyalty\Command\CreateWallet;
+use App\Loyalty\Command\TransferPoints;
+use App\Loyalty\Command\UsePoints;
 use App\Loyalty\PointsCalculation\Fixed;
 use App\Loyalty\PointsCalculation\Ratio;
 use App\Loyalty\PromoActivator\OrderPriceGreaterThan;
@@ -43,11 +46,29 @@ class LoyaltyService
         $this->wallets->save($wallet);
     }
 
-    public function addPoints(string $email, int $points)
+    public function addPoints(AddPoints $command)
     {
-        $wallet = $this->wallets->get(new Email($email));
+        $wallet = $this->wallets->get(new Email($command->getEmail()));
 
-        $wallet->addPoints(new StandardPoints($points));
+        $wallet->addPoints(new StandardPoints($command->getPoints()));
+
+        $this->wallets->save($wallet);
+    }
+
+    public function usePoints(UsePoints $command)
+    {
+        $wallet = $this->wallets->get(new Email($command->getEmail()));
+
+        $wallet->withdrawPoints(new StandardPoints($command->getPoints()));
+
+        $this->wallets->save($wallet);
+    }
+
+    public function transferPoints(TransferPoints $command)
+    {
+        $wallet = $this->wallets->get(new Email($command->getFromEmail()));
+
+        $wallet->initiateTransfer(new Email($command->getToEmail()), $command->getPoints());
 
         $this->wallets->save($wallet);
     }
