@@ -2,8 +2,8 @@
 
 namespace App\Loyalty;
 
+use App\Loyalty\Event\Event;
 use App\Loyalty\Event\PointsAdded;
-use App\Loyalty\Event\PointsUsed;
 use App\Loyalty\Event\WalletCreated;
 use App\Loyalty\Exception\InsufficientBalanceException;
 
@@ -29,28 +29,58 @@ class Wallet
      */
     private $sorter;
 
-    /**
-     * @var Event[]
-     */
     private $events = [];
 
     /**
-     * Wallet constructor.
-     * @param Email $email
-     * @param Sorter $sorter
+     * @var int
      */
-    public function __construct(Email $email, Sorter $sorter)
-    {
-        $this->email = $email;
-        $this->status = Status::UNBLOCKED();
-        $this->sorter = $sorter;
+    private $version = 0;
 
-        $this->addEvent(new WalletCreated($email));
+    public static function fromEvents(array $events): Wallet
+    {
+        $object = new self();
+
+        foreach($events as $event) {
+            $object->handle($event);
+            $object->version = $event->getVersion();
+        }
+
+        return $object;
     }
 
-    private function addEvent(Event $event)
+    public static function create(Email $email, Sorter $sorter)
     {
+        $wallet = new self();
+
+        $wallet->recordThat(new WalletCreated($email, $sorter));
+
+        return $wallet;
+    }
+
+    private function recordThat(Event $event): void
+    {
+        $event->setVersion(++$this->version);
+
         $this->events[] = $event;
+
+        $this->handle($event);
+    }
+
+    private function handle(Event $event): void
+    {
+        switch (get_class($event)) {
+            case WalletCreated::class:
+                /* @var $event WalletCreated */
+                $this->email = $event->getEmail();
+                $this->sorter = $event->getSorter();
+                $this->status = Status::UNBLOCKED();
+                break;
+            case PointsAdded::class:
+                /* @var $event PointsAdded */
+                $this->points[] = $event->getPoints();
+                $this->points = $this->sorter->sort($this->points);
+                break;
+        }
     }
 
     public function addPoints(Points $points): void
@@ -59,10 +89,7 @@ class Wallet
             throw new \Exception(); // @todo Nowy exception, ale konkretny
         }
 
-        $this->points[] = $points;
-        $this->points = $this->sorter->sort($this->points);
-
-        $this->addEvent(new PointsAdded($this->email, $points));
+        $this->recordThat(new PointsAdded($this->email, $points));
     }
 
     public function withdrawPoints(Points $points): void
@@ -74,8 +101,6 @@ class Wallet
 
         // ..
         $this->points = [new StandardPoints($this->getBalance()->getAmount() - $points->getAmount())];
-
-        $this->addEvent(new PointsUsed($this->email, $points));
     }
 
     public function block(string $reason): void
@@ -115,6 +140,15 @@ class Wallet
         return $this->email;
     }
 
+    public function extractEvents(): array
+    {
+        $events = $this->events;
+
+        $this->events = [];
+
+        return $events;
+    }
+    
     /**
      * @param Points $points
      * @return bool
@@ -130,15 +164,5 @@ class Wallet
     private function canAddPoints(): bool
     {
         return $this->status != Status::BLOCKED();
-    }
-
-    public function extractEvents(): array {
-
-    }
-
-    public static function fromEvens(array $events): Wallet {
-        foreach ($events as $event) {
-
-        }
     }
 }

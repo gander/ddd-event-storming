@@ -2,10 +2,9 @@
 
 namespace App\Loyalty;
 
+use App\Loyalty\Command\CreateWallet;
 use App\Loyalty\PointsCalculation\Fixed;
-use App\Loyalty\PointsCalculation\Multiply;
 use App\Loyalty\PointsCalculation\Ratio;
-use App\Loyalty\PromoActivator\EmailDomain;
 use App\Loyalty\PromoActivator\OrderPriceGreaterThan;
 use App\Loyalty\Sorter\DescendingAmountSorter;
 use App\Loyalty\Sorter\Random;
@@ -36,10 +35,10 @@ class LoyaltyService
 
     // createWallet
 
-    public function createWallet(string $email)
+    public function createWallet(CreateWallet $command)
     {
         // @todo Obsluga bledow!
-        $wallet = new Wallet(new Email($email), new Random());
+        $wallet = Wallet::create($command->getEmail(), new Random());
 
         $this->wallets->save($wallet);
     }
@@ -60,12 +59,7 @@ class LoyaltyService
      */
     public function addPointsForOrder(OrderDTO $orderDTO)
     {
-        // Do fabryki z tym?
-        $promotions = [
-            new PointsPromo(new Multiply(2), new EmailDomain('moleo.pl')),
-            new PointsPromo(new Fixed(new StandardPoints(10)), new OrderPriceGreaterThan(Money::PLN(100))),
-            new PointsPromo(new Ratio(0.5), new OrderPriceGreaterThan(Money::PLN(200))),
-        ];
+        $promotions = (new PromotionFactory())->buildForCustomer($orderDTO->getCustomerEmail());
         $promotionsPoints = [];
 
         /**

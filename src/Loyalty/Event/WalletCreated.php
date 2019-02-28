@@ -3,7 +3,7 @@
 namespace App\Loyalty\Event;
 
 use App\Loyalty\Email;
-use App\Loyalty\Event;
+use App\Loyalty\Sorter;
 
 class WalletCreated extends Event
 {
@@ -13,13 +13,21 @@ class WalletCreated extends Event
     private $email;
 
     /**
-     * @param Email $email
+     * @var Sorter
      */
-    public function __construct(Email $email)
+    private $sorter;
+
+    /**
+     * WalletCreated constructor.
+     * @param Email $email
+     * @param Sorter $sorter
+     */
+    public function __construct(Email $email, Sorter $sorter)
     {
         parent::__construct();
 
         $this->email = $email;
+        $this->sorter = $sorter;
     }
 
     /**
@@ -28,5 +36,13 @@ class WalletCreated extends Event
     public function getEmail(): Email
     {
         return $this->email;
+    }
+
+    /**
+     * @return Sorter
+     */
+    public function getSorter(): Sorter
+    {
+        return $this->sorter;
     }
 }

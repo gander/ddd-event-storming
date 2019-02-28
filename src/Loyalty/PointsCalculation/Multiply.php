@@ -12,19 +12,28 @@ class Multiply implements PointsCalculation
     /**
      * @var int
      */
-    private $multiply;
+    private $multiplier;
 
     /**
-     * @param int $multiply
+     * @var PointsCalculation
      */
-    public function __construct(int $multiply)
+    private $pointsCalculation;
+
+    /**
+     * Multiply constructor.
+     * @param int $multiplier
+     * @param PointsCalculation $pointsCalculation
+     */
+    public function __construct(int $multiplier, PointsCalculation $pointsCalculation)
     {
-        $this->multiply = $multiply;
+        $this->multiplier = $multiplier;
+        $this->pointsCalculation = $pointsCalculation;
     }
+
 
     public function calculate(OrderDTO $orderDTO): Points
     {
-        return new StandardPoints(round($orderDTO->getPrice()->getAmount() * $this->multiply));
+        // gubi sie rodzaj klasy!
+        return new StandardPoints($this->pointsCalculation->calculate($orderDTO)->getAmount() * $this->multiplier);
     }
-
 }
