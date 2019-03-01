@@ -7,7 +7,6 @@ use App\Loyalty\Command\CreateWallet;
 use App\Loyalty\Command\TransferPoints;
 use App\Loyalty\Command\UsePoints;
 use App\Loyalty\Sorter\Random;
-use Money\Money;
 
 class LoyaltyService
 {
