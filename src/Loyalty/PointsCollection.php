@@ -44,7 +44,8 @@ class PointsCollection implements \Iterator
         reset($this->points);
     }
 
-    public function addPoints(Points $points) {
+    public function addPoints(Points $points)
+    {
         $this->points[] = $points;
     }
 

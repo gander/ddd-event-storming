@@ -36,7 +36,7 @@ class EventWrapped implements Wallets
 
         $this->repo->save($wallet);
 
-        foreach($eventsToPublish as $eventToPublish) {
+        foreach ($eventsToPublish as $eventToPublish) {
             $this->eventBus->dispatch($eventToPublish);
         }
     }

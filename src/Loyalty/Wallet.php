@@ -51,7 +51,7 @@ class Wallet
     {
         $object = new self();
 
-        foreach($events as $event) {
+        foreach ($events as $event) {
             $object->handle($event);
             $object->version = $event->getVersion();
         }
@@ -156,6 +156,7 @@ class Wallet
     {
         return $this->email;
     }
+
     public function extractEvents(): array
     {
         $events = $this->events;
@@ -164,7 +165,7 @@ class Wallet
 
         return $events;
     }
-    
+
     /**
      * @param Points $points
      * @return bool

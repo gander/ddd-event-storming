@@ -1,6 +1,5 @@
 <?php
 
-use App\Loyalty\AnonymizedEmail;
 use App\Loyalty\Command\AddPoints;
 use App\Loyalty\Command\CreateWallet;
 use App\Loyalty\Command\TransferPoints;
@@ -9,16 +8,10 @@ use App\Loyalty\Email;
 use App\Loyalty\Event\PointsUsed;
 use App\Loyalty\Event\TransferInitiated;
 use App\Loyalty\LoyaltyService;
-use App\Loyalty\OrderDTO;
 use App\Loyalty\Repository\EventWrapped;
-use App\Loyalty\Repository\GaufretteFilesystemWallets;
 use App\Loyalty\Repository\InMemoryWallets;
-use App\Loyalty\Sorter\Random;
 use App\Loyalty\SorterFactory;
-use App\Loyalty\StandardPoints;
 use App\Loyalty\TransferProcess;
-use App\Loyalty\UppercaseEmail;
-use App\Loyalty\Wallet;
 use Gaufrette\Adapter\Local;
 use Gaufrette\Adapter\Zip;
 use Gaufrette\Filesystem;
@@ -38,8 +31,8 @@ $adapter = new Local('var/wallets/');
 //$wallets = new GaufretteFilesystemWallets(new Filesystem($adapter));
 $wallets = new EventWrapped($eventBus, new InMemoryWallets());
 
-$email = date('YmdHis').'@example.org';
-$email2 = date('YmdHis').'@example-transferred.org';
+$email = date('YmdHis') . '@example.org';
+$email2 = date('YmdHis') . '@example-transferred.org';
 
 $service = new LoyaltyService($wallets, new SorterFactory());
 
@@ -70,7 +63,9 @@ $eventRouter
     ->route(PointsUsed::class)
     ->to($transferProcess);
 
-$eventRouter->route(\App\Loyalty\Event\WalletCreated::class)->to(function () { var_dump('DZIALA'); } );
+$eventRouter->route(\App\Loyalty\Event\WalletCreated::class)->to(function () {
+    var_dump('DZIALA');
+});
 
 $commandBus->dispatch(new CreateWallet($email));
 $commandBus->dispatch(new CreateWallet($email2));

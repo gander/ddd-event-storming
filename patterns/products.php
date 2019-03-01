@@ -1,7 +1,9 @@
 <?php
 
-interface Product {
+interface Product
+{
     public function getName(): string;
+
     public function getPrice(): int;
 }
 
@@ -167,7 +169,7 @@ class Discounted implements Product
      */
     private $product;
 
-     /**
+    /**
      * @var Discount
      */
     private $discount;

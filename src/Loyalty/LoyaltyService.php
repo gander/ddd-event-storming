@@ -6,10 +6,6 @@ use App\Loyalty\Command\AddPoints;
 use App\Loyalty\Command\CreateWallet;
 use App\Loyalty\Command\TransferPoints;
 use App\Loyalty\Command\UsePoints;
-use App\Loyalty\PointsCalculation\Fixed;
-use App\Loyalty\PointsCalculation\Ratio;
-use App\Loyalty\PromoActivator\OrderPriceGreaterThan;
-use App\Loyalty\Sorter\DescendingAmountSorter;
 use App\Loyalty\Sorter\Random;
 use Money\Money;
 

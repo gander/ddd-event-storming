@@ -1,16 +1,16 @@
 {
-    "autoload": {
-        "psr-4": {
-            "App\\Loyalty\\": "src/Loyalty"
-        }
-    },
-    "require": {
-        "ramsey/uuid": "^3.8",
-        "moneyphp/money": "^3.2",
-        "myclabs/php-enum": "^1.6",
-        "webmozart/assert": "^1.4",
-        "knplabs/gaufrette": "^0.8.1",
-        "phpunit/phpunit": "^8.0",
-        "prooph/service-bus": "^6.2"
+  "autoload": {
+    "psr-4": {
+      "App\\Loyalty\\": "src/Loyalty"
     }
+  },
+  "require": {
+    "ramsey/uuid": "^3.8",
+    "moneyphp/money": "^3.2",
+    "myclabs/php-enum": "^1.6",
+    "webmozart/assert": "^1.4",
+    "knplabs/gaufrette": "^0.8.1",
+    "phpunit/phpunit": "^8.0",
+    "prooph/service-bus": "^6.2"
+  }
 }

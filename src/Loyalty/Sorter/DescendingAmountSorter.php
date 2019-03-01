@@ -5,9 +5,11 @@ namespace App\Loyalty\Sorter;
 use App\Loyalty\Points;
 use App\Loyalty\Sorter;
 
-class DescendingAmountSorter implements Sorter {
+class DescendingAmountSorter implements Sorter
+{
 
-    public function sort(array $points): array {
+    public function sort(array $points): array
+    {
         usort($points, function (Points $firstPoint, Points $secondPoint) {
 
             if ($firstPoint->getAmount() === $secondPoint->getAmount()) {
